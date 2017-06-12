@@ -1,2 +1,2 @@
 # scRNASeq
-Repository for single cell RNA-Seq pipeline
+Repository for CCBR single cell RNA-Seq pipeline
