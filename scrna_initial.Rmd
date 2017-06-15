@@ -1,5 +1,5 @@
 ---
-title: "Inital Report"
+title: "Inital/QC Report"
 author: "CCBR scRNAseq pipeline"
 output: html_document
 params:
@@ -121,6 +121,7 @@ if(grepl("hg",species)|grepl("mm",species)){
 sce$G1score <- assignments$score$G1
 sce$G2Mscore <- assignments$score$G2M
 ```
+
 ### **PCA 1:2 Before Regressing Cell Cycle Stage**
 
 ```{r regress_confounding, echo=FALSE,warning=FALSE,message=FALSE,message=FALSE,results='hide',fig.keep='all'}
@@ -147,7 +148,7 @@ PCAPlot(so_temp, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0
 so <- RegressOut(so, latent.vars = c("nUMI", "percent.mito", "G1.score", "G2M.score"))
 ```
 
-### **PCA 1:2 Before Regressing Cell Cycle Stage**
+### **PCA 1:2 After Regressing by G1/G2M Scores**
 
 ```{r regress_confounding_final, echo=FALSE,warning=FALSE,message=FALSE,message=FALSE,results='hide',fig.keep='all'}
 so <- RegressOut(so, latent.vars = c("nUMI", "percent.mito", "G1.score", "G2M.score"))
@@ -164,7 +165,7 @@ fontsize <- theme(axis.text=element_text(size=12), axis.title=element_text(size=
 plotQC(sce, type = "highest-expression", n=50) + fontsize
 ```
 
-### **PC Metrics**
+### **scater PC Metrics**
 
 ```{r findpcs, echo=FALSE,warning=FALSE,message=FALSE}
 plotQC(sce, type = "find-pcs") + fontsize
