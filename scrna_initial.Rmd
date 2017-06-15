@@ -72,17 +72,23 @@ so <- Setup(so, min.genes=0, min.cells=round(0.001*ncol(sce)), do.logNormalize=T
 
 ### **Pre-Filter Histograms**
 
-```{r histograms, echo=FALSE,warning=FALSE,message=FALSE}
-par(mfrow=c(3,2))
-hist(sce$total_counts, xlab="Library sizes", main="", 
+```{r histograms_1, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(1,2))
+hist(sce$total_counts, xlab="Library size", main="", 
     breaks=20, col="grey80", ylab="Number of cells")
-plot(density(sce$total_counts),col="red", xlab="Library sizes", main="")
+plot(density(sce$total_counts),col="red", xlab="Library size", main="")
+```
+```{r histograms_2, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(1,2))
 hist(sce$total_features, xlab="Number of expressed genes", main="", 
     breaks=20, col="grey80", ylab="Number of cells")
-plot(density(sce$total_features),col="red", xlab="Library sizes", main="")
+plot(density(sce$total_features),col="red", xlab="Number of expressed genes", main="")
+```
+```{r histograms_3, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(1,2))
 hist(sce$pct_counts_feature_controls_Mt, xlab="Mitochondrial proportion (%)", 
     ylab="Number of cells", breaks=20, main="", col="grey80")
-plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Library sizes", main="")
+plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Mitochondrial proportion (%)", main="")
 ```
 
 ### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
@@ -215,26 +221,37 @@ plotQC(sce, type = "find-pcs") + fontsize
 
 ### **Seurat MeanVar Plot**
 ```{r Seurat_meanvar, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
-so <- MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
-```
-
-### **Seurat PCs**
-
-```{r Seurat_pcas, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
-so <- PCA(so, pc.genes = so@var.genes, do.print = FALSE)
-so <- ProjectPCA(so,do.print=F)
-```
-
-### **Seurat PCA Plots**
-
-```{r Seurat_pcaplots, echo=FALSE,warning=FALSE,message=FALSE}
-PCAPlot(so, 1, 2)
+MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
 ```
 
 ### **Seurat PC Heatmaps**
 
-```{r Seurat_heatmaps, echo=FALSE,warning=FALSE,message=FALSE}
-#PCHeatmap(so, pc.use = 1:20, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```{r Seurat_heatmaps_1, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 1:2, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_2, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 3:5, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_3, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 6:8, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_4, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 9:11, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_5, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 12:14, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_6, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 15:17, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
+```
+
+```{r Seurat_heatmaps_7, echo=FALSE,warning=FALSE,message=FALSE}
+PCHeatmap(so, pc.use = 18:20, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
 ```
 
 ### **Seurat JackStraw Plot**
