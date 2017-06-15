@@ -24,7 +24,7 @@ matrix<-params$matrix
 ### **Report generated:** 
 ####    *`r dateandtime`* 
 
-```{r setup, echo=FALSE, warning=FALSE,message=FALSE}
+```{r setup, echo=FALSE, warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
 # library(rgl)
 library(knitr)
 library(Seurat)
@@ -82,14 +82,16 @@ sce<-sce_filtered
 
 ### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
 
-### **Removed the following** ` r length(droppedcells)` **barcoded cells as poor quality:**  
+### **Removed the following** `r length(droppedcells)` **barcoded cells as poor quality:**  
 
 
 ```{r filter_metrics, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
-print(data.frame(ByLibSize=sum(libsize.drop), ByFeature=sum(feature.drop), ByMito=sum(mito.drop), Remaining=ncol(sce)))
+kable(data.frame(ByLibSize=sum(libsize.drop), ByFeature=sum(feature.drop), ByMito=sum(mito.drop), Remaining=ncol(sce)))
 cat("  \n")
-print(droppedcells)
+cat(unlist(droppedcells))
+cat("  \n")
 ```
+
 ### **nGenes vs nUMI** (Useful for outlier detection)
 
 ```{r nUMI_plot, echo=FALSE, message=FALSE, warning=FALSE}
@@ -119,8 +121,9 @@ if(grepl("hg",species)|grepl("mm",species)){
 sce$G1score <- assignments$score$G1
 sce$G2Mscore <- assignments$score$G2M
 ```
+### **PCA 1:2 Before Regressing Cell Cycle Stage**
 
-```{r regress_confounding, echo=FALSE,warning=FALSE,message=FALSE}
+```{r regress_confounding, echo=FALSE,warning=FALSE,message=FALSE,message=FALSE,results='hide',fig.keep='all'}
 norm_exprs(sce) <- removeBatchEffect(exprs(sce), covariates=data.frame(assignments$score[,c("G1", "G2M")],percent.mito=sce$pct_counts_feature_controls_Mt,nUMI=so@data.info$nUMI))
 stage <- c()
 for(i in 1:length(sce$G1score)){
@@ -136,16 +139,22 @@ for(i in 1:length(sce$G1score)){
 }
 metadata <- data.frame(percent.mito=sce$pct_counts_feature_controls_Mt,G1.score=sce$G1score,G2M.score=sce$G2Mscore,stage=stage,row.names=colnames(sce))
 so <- AddMetaData(so, metadata)
-# so_temp <- RegressOut(so, latent.vars = c("nUMI", "percent.mito"))
-# so_temp <- MeanVarPlot(so_temp ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
-# so_temp <- PCA(so_temp, pc.genes = so_temp@var.genes, do.print = FALSE)
-# so_temp <- ProjectPCA(so_temp,do.print=F)
-# PCAPlot(so_temp, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0, 0.3),rgb(0, 0, 1, 0.7),rgb(0, 0, 0, 0.7)))
+so_temp <- RegressOut(so, latent.vars = c("nUMI", "percent.mito"))
+so_temp <- MeanVarPlot(so_temp ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F, do.plot=F)
+so_temp <- PCA(so_temp, pc.genes = so_temp@var.genes, do.print = FALSE)
+so_temp <- ProjectPCA(so_temp,do.print=F)
+PCAPlot(so_temp, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0, 0.3),rgb(0, 0, 1, 0.7),rgb(0, 0, 0, 0.7)))
 so <- RegressOut(so, latent.vars = c("nUMI", "percent.mito", "G1.score", "G2M.score"))
-# so <- MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
-# so <- PCA(so, pc.genes = so@var.genes, do.print = FALSE)
-# so <- ProjectPCA(so,do.print=F)
-# PCAPlot(so, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0, 0.3),rgb(0, 0, 1, 0.7),rgb(0, 0, 0, 0.7)))
+```
+
+### **PCA 1:2 Before Regressing Cell Cycle Stage**
+
+```{r regress_confounding_final, echo=FALSE,warning=FALSE,message=FALSE,message=FALSE,results='hide',fig.keep='all'}
+so <- RegressOut(so, latent.vars = c("nUMI", "percent.mito", "G1.score", "G2M.score"))
+so <- MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F, do.plot=F)
+so <- PCA(so, pc.genes = so@var.genes, do.print = FALSE)
+so <- ProjectPCA(so,do.print=F)
+PCAPlot(so, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0, 0.3),rgb(0, 0, 1, 0.7),rgb(0, 0, 0, 0.7)))
 ```
 
 ### **Highest Expression**
@@ -155,21 +164,21 @@ fontsize <- theme(axis.text=element_text(size=12), axis.title=element_text(size=
 plotQC(sce, type = "highest-expression", n=50) + fontsize
 ```
 
-### **Find PCs**
+### **PC Metrics**
 
 ```{r findpcs, echo=FALSE,warning=FALSE,message=FALSE}
 plotQC(sce, type = "find-pcs") + fontsize
 ```
 
 ### **MeanVar Plot**
-```{r Seurat_meanvar, echo=FALSE,warning=FALSE,message=FALSE}
+```{r Seurat_meanvar, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
 so <- MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
 ```
 
-### **PCAs**
+### **PCs**
 
-```{r Seurat_pcas, echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
-so <- PCA(so, pc.genes = so@var.genes, do.print = TRUE, pcs.print = 5, genes.print = 5)
+```{r Seurat_pcas, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
+so <- PCA(so, pc.genes = so@var.genes, do.print = FALSE)
 so <- ProjectPCA(so,do.print=F)
 ```
 
