@@ -82,14 +82,15 @@ sce<-sce_filtered
 
 ### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
 
-### **Removed the following** ` r length(droppedcells)` **barcoded cells as poor quality:**  
+### **Removed the following** `r length(droppedcells)` **barcoded cells as poor quality:**  
 
 
 ```{r filter_metrics, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
-print(data.frame(ByLibSize=sum(libsize.drop), ByFeature=sum(feature.drop), ByMito=sum(mito.drop), Remaining=ncol(sce)))
+kable(data.frame(ByLibSize=sum(libsize.drop), ByFeature=sum(feature.drop), ByMito=sum(mito.drop), Remaining=ncol(sce)))
 cat("  \n")
 print(droppedcells)
 ```
+
 ### **nGenes vs nUMI** (Useful for outlier detection)
 
 ```{r nUMI_plot, echo=FALSE, message=FALSE, warning=FALSE}
@@ -155,7 +156,7 @@ fontsize <- theme(axis.text=element_text(size=12), axis.title=element_text(size=
 plotQC(sce, type = "highest-expression", n=50) + fontsize
 ```
 
-### **Find PCs**
+### **PC Metrics**
 
 ```{r findpcs, echo=FALSE,warning=FALSE,message=FALSE}
 plotQC(sce, type = "find-pcs") + fontsize
