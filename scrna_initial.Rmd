@@ -53,6 +53,7 @@ sce <- calculateQCMetrics(sce, feature_controls=list(Mt=is.mito))
 libsize.drop <- isOutlier(sce$total_counts, nmads=3, type="lower", log=TRUE)
 feature.drop <- isOutlier(sce$total_features, nmads=3, type="lower", log=TRUE)
 mito.drop <- isOutlier(sce$pct_counts_feature_controls_Mt, nmads=3, type="higher")
+sce$keep <- !(libsize.drop | feature.drop | mito.drop)
 sce_filtered <- sce[,!(libsize.drop | feature.drop | mito.drop)]
 numcells <- nexprs(sce_filtered, byrow=TRUE)
 keepgenes <- numcells >= round(0.001*ncol(sce))
@@ -68,16 +69,20 @@ so <- SubsetData(so, cells.use=keepcells)
 so@raw.data <- so@data
 so <- Setup(so, min.genes=0, min.cells=round(0.001*ncol(sce)), do.logNormalize=T, do.scale=F, do.center=F, total.expr=1e4, project=projectId, save.raw=F)
 ```
+
 ### **Pre-Filter Histograms**
 
 ```{r histograms, echo=FALSE,warning=FALSE,message=FALSE}
+par(mfrow=c(3,2))
 hist(sce$total_counts, xlab="Library sizes", main="", 
     breaks=20, col="grey80", ylab="Number of cells")
+plot(density(sce$total_counts),col="red", xlab="Library sizes", main="")
 hist(sce$total_features, xlab="Number of expressed genes", main="", 
     breaks=20, col="grey80", ylab="Number of cells")
+plot(density(sce$total_features),col="red", xlab="Library sizes", main="")
 hist(sce$pct_counts_feature_controls_Mt, xlab="Mitochondrial proportion (%)", 
     ylab="Number of cells", breaks=20, main="", col="grey80")
-sce<-sce_filtered
+plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Library sizes", main="")
 ```
 
 ### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
@@ -92,9 +97,44 @@ cat(unlist(droppedcells))
 cat("  \n")
 ```
 
+### **QC PCA to Visualize Dropped Cells**
+
+```{r qc_pca, echo=FALSE,warning=FALSE,message=FALSE}
+sce$keep_by_defaults <- (
+    # remove cells with unusual numbers of genes
+    !sce$filter_on_total_features &
+    # remove cells with unusual numbers molecules counted
+    !sce$filter_on_total_counts &
+    # < 80% mitochondrial
+    !sce$filter_on_pct_counts_feature_controls_Mt &
+    # controls shouldn't be used in downstream analysis
+    !sce$is_cell_control
+)
+scater::plotPCA(sce,
+                size_by = "total_features", 
+                colour_by = "keep",
+                shape_by = "keep_by_defaults",
+                pca_data_input = "pdata",
+                detect_outliers = FALSE,
+                return_SCESet = FALSE)
+sce<-sce_filtered
+```
+
+```{r rle_plot, echo=FALSE,message=FALSE,warning=FALSE,results='hide',fig.keep='all'}
+### **Relative Log Expression (Before and After CPM Normalization)
+
+#set_exprs(sce, "log2_counts") <- log2(counts(sce)+sce@logExprsOffset)
+#qclust <- quickCluster(sce, min.size = 30)
+#sce <- computeSumFactors(sce, sizes = 15, clusters = qclust)
+#sce <- normalize(sce)
+#plotRLE(sce,exprs_mats=list(Raw="log2_counts",CPM="exprs"),exprs_logged=c(TRUE,TRUE))
+```
+
 ### **nGenes vs nUMI** (Useful for outlier detection)
 
 ```{r nUMI_plot, echo=FALSE, message=FALSE, warning=FALSE}
+#xthresh = median(so@data.info$nUMI)+3*stats::mad(so@data.info$nUMI)
+#ythresh = median(so@data.info$nGene)+3*stats::mad(so@data.info$nGene)
 GenePlot(so, "nUMI", "nGene")
 ```
 
@@ -162,7 +202,9 @@ PCAPlot(so, 1, 2, group.by="stage",cols.use=c(rgb(1, 0, 0, 0.7),rgb(0, 1, 0, 0.3
 
 ```{r highestexpression, echo=FALSE,warning=FALSE,message=FALSE}
 fontsize <- theme(axis.text=element_text(size=12), axis.title=element_text(size=16))
+make.names(featureData(sce)$symbol,unique=TRUE)->featureNames(sce)
 plotQC(sce, type = "highest-expression", n=50) + fontsize
+featureData(sce)$id->featureNames(sce)
 ```
 
 ### **scater PC Metrics**
@@ -171,31 +213,31 @@ plotQC(sce, type = "highest-expression", n=50) + fontsize
 plotQC(sce, type = "find-pcs") + fontsize
 ```
 
-### **MeanVar Plot**
+### **Seurat MeanVar Plot**
 ```{r Seurat_meanvar, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
 so <- MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5, do.contour = F)
 ```
 
-### **PCs**
+### **Seurat PCs**
 
 ```{r Seurat_pcas, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all'}
 so <- PCA(so, pc.genes = so@var.genes, do.print = FALSE)
 so <- ProjectPCA(so,do.print=F)
 ```
 
-### **PCA Plots**
+### **Seurat PCA Plots**
 
 ```{r Seurat_pcaplots, echo=FALSE,warning=FALSE,message=FALSE}
 PCAPlot(so, 1, 2)
 ```
 
-### **Heatmaps**
+### **Seurat PC Heatmaps**
 
 ```{r Seurat_heatmaps, echo=FALSE,warning=FALSE,message=FALSE}
 #PCHeatmap(so, pc.use = 1:20, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
 ```
 
-### **JackStraw Plot**
+### **Seurat JackStraw Plot**
 
 ```{r Seurat_jackstraw, echo=FALSE,warning=FALSE,message=FALSE}
 #so <- JackStraw(so, num.replicate = 100, do.print = FALSE)
@@ -203,7 +245,7 @@ PCAPlot(so, 1, 2)
 
 ```
 
-### **PCElbowPlot**
+### **Seurat PCElbowPlot**
 
 ```{r Seurat_elbow, echo=FALSE,warning=FALSE,message=FALSE}
 PCElbowPlot(so)
