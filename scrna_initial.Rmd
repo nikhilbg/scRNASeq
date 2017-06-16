@@ -92,7 +92,7 @@ hist(sce$pct_counts_feature_controls_Mt, xlab="Mitochondrial proportion (%)",
 plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Mitochondrial proportion (%)", main="")
 ```
 
-### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix from `r totalgenes` inital total genes.**  
+### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix from** `r totalgenes` **inital total genes.**  
 
 ### **Removed the following** `r length(droppedcells)` **barcoded cells as poor quality:**  
 
