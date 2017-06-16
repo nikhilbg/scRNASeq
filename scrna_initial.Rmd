@@ -59,6 +59,7 @@ numcells <- nexprs(sce_filtered, byrow=TRUE)
 keepgenes <- numcells >= round(0.001*ncol(sce))
 sce_filtered <- sce_filtered[keepgenes,]
 numdroppedgenes <- sum(!keepgenes)
+totalgenes <- length(keepgenes)
 keepcells <- rownames(sce_filtered@phenoData)
 droppedcells <- setdiff(rownames(sce@phenoData),keepcells)
 
@@ -91,7 +92,7 @@ hist(sce$pct_counts_feature_controls_Mt, xlab="Mitochondrial proportion (%)",
 plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Mitochondrial proportion (%)", main="")
 ```
 
-### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
+### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix from** `r totalgenes` **inital total genes.**  
 
 ### **Removed the following** `r length(droppedcells)` **barcoded cells as poor quality:**  
 
@@ -254,16 +255,12 @@ PCHeatmap(so, pc.use = 15:17, cells.use = 500, do.balanced = TRUE, label.columns
 PCHeatmap(so, pc.use = 18:20, cells.use = 500, do.balanced = TRUE, label.columns = FALSE, use.full = FALSE)
 ```
 
-### **Seurat JackStraw Plot**
-
-```{r Seurat_jackstraw, echo=FALSE,warning=FALSE,message=FALSE}
-#so <- JackStraw(so, num.replicate = 100, do.print = FALSE)
-#JackStrawPlot(so, PCs = 1:20)
-
-```
-
 ### **Seurat PCElbowPlot**
 
 ```{r Seurat_elbow, echo=FALSE,warning=FALSE,message=FALSE}
 PCElbowPlot(so)
+```
+
+```{r Seurat_save_rds, echo=FALSE,warning=FALSE,message=FALSE}
+saveRDS(so, "seurat_object.rds")
 ```
