@@ -59,6 +59,7 @@ numcells <- nexprs(sce_filtered, byrow=TRUE)
 keepgenes <- numcells >= round(0.001*ncol(sce))
 sce_filtered <- sce_filtered[keepgenes,]
 numdroppedgenes <- sum(!keepgenes)
+totalgenes <- length(keepgenes)
 keepcells <- rownames(sce_filtered@phenoData)
 droppedcells <- setdiff(rownames(sce@phenoData),keepcells)
 
@@ -91,7 +92,7 @@ hist(sce$pct_counts_feature_controls_Mt, xlab="Mitochondrial proportion (%)",
 plot(density(sce$pct_counts_feature_controls_Mt),col="red", xlab="Mitochondrial proportion (%)", main="")
 ```
 
-### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix.**  
+### **Removed** `r numdroppedgenes` **lowly represented genes from count matrix from `r totalgenes` inital total genes.**  
 
 ### **Removed the following** `r length(droppedcells)` **barcoded cells as poor quality:**  
 
