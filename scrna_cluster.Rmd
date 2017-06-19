@@ -33,7 +33,7 @@ library(rgl)
 library(Seurat)
 library(dplyr)
 library(Matrix)
-
+library(methods)
 so <- readRDS(so_save)
 ```
 
@@ -46,17 +46,20 @@ TSNEPlot(so,do.label=T)
 saveRDS(so, "seurat_object.rds")
 ```
 
-### **Top 5 Gene Markers**
-
 ```{r Seurat_genes, echo=FALSE,warning=FALSE,message=FALSE,results='hide'}
 nclusts <- length(levels(so@ident))
 glist <- list()
 tables <- htmltools::tagList()
 for(i in 1:nclusts){
 	glist[[i]]<-FindMarkers(so,ident.1=i-1,min.pct=0.25)
-	tables[[i]] <- DT::datatable(glist[[i]][1:10,], caption=htmltools::tags$caption(paste0("Top 10 gene markers for cluster #",(i-1)) ,style="color:red; font-size: 12px" ),rownames=F)
+	tables[[i]] <- DT::datatable(glist[[i]][1:100,], caption=htmltools::tags$caption(paste0("Top 10 gene markers for cluster #",(i-1)) ,style="color:red; font-size: 12px" ),rownames=T)
 	write.table(glist[[i]],file=paste0("Seurat_",pcs,"_",res,"_cluster_",(i-1),".txt"),sep="\t",quote=F)
 }
+```
+
+### **Top 5 Gene Markers**
+
+```{r Seurat_genes_table, echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
 tables
 ```
 

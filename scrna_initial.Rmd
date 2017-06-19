@@ -228,7 +228,7 @@ MeanVarPlot(so ,fxn.x = expMean, fxn.y = logVarDivMean, x.low.cutoff = 0.0125, x
 
 ### **Seurat PCA Genes**
 
-```{r Seurat_vizpca, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all',fig.height=60}
+```{r Seurat_vizpca, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all',fig.height=70}
 VizPCA(so, 1:20, nCol=2)
 ```
 
