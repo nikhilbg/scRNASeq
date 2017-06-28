@@ -38,6 +38,7 @@ library(GSEABase)
 library(genefilter)
 library(org.Hs.eg.db)
 library(gplots)
+library(gdata)
 
 # knit_hooks$set(rgl = function(before, options, envir) {
 #   if (!before) {
@@ -273,19 +274,28 @@ PCHeatmap(so, pc.use = 18:20, cells.use = 500, do.balanced = TRUE, label.columns
 PCElbowPlot(so)
 ```
 
+```{r Seurat_save_rds, echo=FALSE,warning=FALSE,message=FALSE}
+gdata::keep(so, params, species, projectId, sure=TRUE) ## memory optimizations
+saveRDS(so, paste0(projectId,"_seurat_object.rds")) ## output SO
+exprs <- as.matrix(so@data) ## only need expression matrix for next step
+gdata::keep(exprs, params, species, sure=TRUE)
+```
+
 ### **GSVA Heatmap**
 
 ```{r gsva_heatmap, echo=FALSE,warning=FALSE,message=FALSE,results='hide',fig.keep='all',fig.height=10}
-exprs <- as.matrix(so@data)
-eset <- ExpressionSet(assayData=exprs)
-eset_filtered <- varFilter(eset,var.func=IQR, var.cutoff=0.5, filterByQuantile=TRUE)
-gsets <- getGmt("/data/ngs/public/msigdb/msigdb.v4.0.symbols.gmt")
-scores <- gsva(exprs(eset_filtered),gsets,,min.sz=10,max.sz=500,verbose=TRUE)
-myscores <- scores$es.obs[unlist(lapply(rownames(scores$es.obs),function(x){grepl("^REACTOME_",x)|grepl("^KEGG_",x)|grepl("^BIOCARTA_",x)})),]
-top <- myscores[names(head(rev(sort((rowSds(myscores)))),50)),]
-heatmap.2(top,trace="none",labRow=NULL,margins=c(1,20),cexRow=0.7)
-```
-
-```{r Seurat_save_rds, echo=FALSE,warning=FALSE,message=FALSE}
-saveRDS(so, "seurat_object.rds")
+if(grepl("hg",species)|grepl("mm",species)){
+  eset <- ExpressionSet(assayData=exprs)
+  eset_filtered <- varFilter(eset,var.func=IQR, var.cutoff=0.5, filterByQuantile=TRUE)
+  if(grepl("hg",species)){
+    gsets <- getGmt("/data/ngs/public/msigdb/msigdb.v4.0.symbols.gmt")
+  }
+  if(grepl("mm",species)){
+    gsets <- getGmt("/data/ngs/public/msigdb/msigdb.v4.0.symbols.gmt")
+  }
+  scores <- gsva(exprs(eset_filtered),gsets,,min.sz=10,max.sz=500,verbose=TRUE)
+  myscores <- scores$es.obs[unlist(lapply(rownames(scores$es.obs),function(x){grepl("^REACTOME_",x)|grepl("^KEGG_",x)|grepl("^BIOCARTA_",x)})),]
+  top <- myscores[names(head(rev(sort((rowSds(myscores)))),50)),]
+  heatmap.2(top,trace="none",labRow=NULL,margins=c(1,20),cexRow=0.7)
+}
 ```
