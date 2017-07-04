@@ -24,3 +24,8 @@ Future directions include:
 - cluster by cluster heatmaps using GSVA pathway enrichment after the clustering step
 - displaying more PCs in the visualization steps
 - more filtering options
+
+
+Current workflow flowchart:
+
+![alt text](scrnaseq_flowchart.png?raw=true)
