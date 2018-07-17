@@ -63,14 +63,14 @@ if config['project']['MATTYPE'] == "cellranger" :
      output: 
       out1=join(workpath,subdir,"{name}/","{pid}.{name}_scrna_initial.html"),
       out2=join(workpath,subdir,"{name}/","{pid}.{name}_initial_seurat_object.rds")
-     shell: "mkdir -p {params.dir}/{params.sd}/{wildcards.name}; cp Scripts/scrna_initial.Rmd {params.dir}/{params.sd}/{wildcards.name}/; module load R/3.5; Rscript Scripts/scrna_initial_call.R '{params.dir}/{params.sd}/{wildcards.name}' '{params.countspath}/{wildcards.name}/{params.refer}' '{params.refer}' '{params.projectId}.{wildcards.name}' '{params.projDesc}' '{params.mattype}' '{params.docycleregress}'"
+     shell: "mkdir -p {params.dir}/{params.sd}/{wildcards.name}; cp Scripts/scrna_initial.Rmd {params.dir}/{params.sd}/{wildcards.name}/; module load R/3.5; Rscript Scripts/scrna_initial_call.R '{params.dir}/{params.sd}/{wildcards.name}' '{params.countspath}/{wildcards.name}/outs/filtered_gene_bc_matrices/{params.refer}' '{params.refer}' '{params.projectId}.{wildcards.name}' '{params.projDesc}' '{params.mattype}' '{params.docycleregress}'"
 elif config['project']['MATTYPE'] == "cellranger_raw" :
   rule scrna_initial: 
      params: rname='pl:scrnainit',batch='--partition=largemem --cpus-per-task=32 --mem=1000g --time=48:00:00',countspath=config['project']['COUNTSPATH'],refer=config['project']['annotation'],dir=config['project']['workpath'],projDesc=config['project']['description'],projectId=config['project']['id'],mattype=config['project']['MATTYPE'],docycleregress=config['project']['DOCYCLEREGRESS'],sd=subdir
      output: 
       out1=join(workpath,subdir,"{name}/","{pid}.{name}_scrna_initial.html"),
       out2=join(workpath,subdir,"{name}/","{pid}.{name}_initial_seurat_object.rds")
-     shell: "mkdir -p {params.dir}/{params.sd}/{wildcards.name}; cp Scripts/scrna_initial.Rmd {params.dir}/{params.sd}/{wildcards.name}/; module load R/3.5; Rscript Scripts/scrna_initial_call.R '{params.dir}/{params.sd}/{wildcards.name}' '{params.countspath}/{wildcards.name}/{params.refer}' '{params.refer}' '{params.projectId}.{wildcards.name}' '{params.projDesc}' '{params.mattype}' '{params.docycleregress}'"
+     shell: "mkdir -p {params.dir}/{params.sd}/{wildcards.name}; cp Scripts/scrna_initial.Rmd {params.dir}/{params.sd}/{wildcards.name}/; module load R/3.5; Rscript Scripts/scrna_initial_call.R '{params.dir}/{params.sd}/{wildcards.name}' '{params.countspath}/{wildcards.name}/outs/raw_gene_bc_matrices/{params.refer}' '{params.refer}' '{params.projectId}.{wildcards.name}' '{params.projDesc}' '{params.mattype}' '{params.docycleregress}'"
 
 elif config['project']['MATTYPE'] == "biorad" :
   rule scrna_initial: 
