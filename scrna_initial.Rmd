@@ -577,7 +577,7 @@ PCElbowPlot(so)
 gdata::keep(so, params, species, projectId, isHuman, isMouse, sure=TRUE) ## memory optimizations
 saveRDS(so, paste0(projectId,"_initial_seurat_object.rds")) ## output SO
 exprs <- as.matrix(so@scale.data) ## only need expression matrix for next step, use scaled values
-gdata::keep(exprs, params, species, sure=TRUE)
+gdata::keep(exprs, params, species, isHuman, isMouse, sure=TRUE)
 ```
 
 ### **GSVA Heatmap**
