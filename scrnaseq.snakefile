@@ -105,7 +105,7 @@ rule scrna_jackstraw:
 
 rule scrna_cluster: 
    params: rname='pl:scrnacluster',batch='--partition=largemem --cpus-per-task=32 --mem=1000g --time=48:00:00',dir=config['project']['workpath'],pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],projDesc=config['project']['description'],projectId=config['project']['id'],sd=subdir
-   input: so=join(workpath,subdir,"{pid}.{name}_initial_seurat_object.rds")
+   input: so=join(workpath,subdir,"{name}/","{pid}.{name}_initial_seurat_object.rds")
    output:
     out1=join(workpath,subdir,"{name}/","{pid}.{name}"+"_scrna_cluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'])),
     out2=join(workpath,subdir,"{name}/","{pid}.{name}"+"_cluster_seurat_object_{pcs}_{resolution}.rds".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION']))
