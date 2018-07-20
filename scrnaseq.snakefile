@@ -41,7 +41,7 @@ elif config['project']['pipeline'] == "scrnaseqinit":
 elif config['project']['pipeline'] == "scrnaseqcluster":
   rule all:
      params: batch='--time=168:00:00'
-     input: expand(join(workpath,subdir,"{pid}.{name}_scrna_cluster_{pcs}_{resolution}.html")pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],pid=pid,name=samples)
+     input: expand(join(workpath,subdir,"{pid}.{name}_scrna_cluster_{pcs}_{resolution}.html"),pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],pid=pid,name=samples)
 
 elif config['project']['pipeline'] == "scrnaseqmulticluster":
   rule all:
