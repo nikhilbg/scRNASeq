@@ -110,5 +110,5 @@ rule scrna_cca:
    input: all_so=expand(join(workpath,subdir,"{name}/","{pid}.{name}_initial_seurat_object.rds"),pid=pid,name=samples)
    output:
     out1=join(workpath,subdir,"combined_cca/","{pid}_scrna_cca.html".format(pid=pid)),
-    out2=join(workpath,subdir,pid,"_combined_cca_seurat_object.rds")
+    out2=join(workpath,subdir,"combined_cca/","{pid}_combined_cca_seurat_object.rds")
    shell: "mkdir -p {params.dir}/{params.sd}/combined_cca; cp Scripts/scrna_cca.Rmd {params.dir}/{params.sd}/combined_cca/; module load R/3.5; Rscript Scripts/scrna_cca_call.R '{params.dir}/{params.sd}/combined_cca' '{input.all_so}' '{params.contrasts}' '{params.projectId}' '{params.projDesc}'"
