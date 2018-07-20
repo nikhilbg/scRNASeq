@@ -35,7 +35,7 @@ library(dplyr)
 library(Matrix)
 library(methods)
 library(igraph)
-library(TSCAN)
+#library(TSCAN) #NOT INSTALLED ON BOIWULF YET
 so <- readRDS(so_save)
 ```
 
@@ -84,9 +84,10 @@ tables
 
 ```{r tscan, echo=FALSE,warning=FALSE,message=FALSE}
 #This is some implementation of Maggie's TSCAN code
-#Temporarily placed here
+#Temporarily placed here for later reference
 #It will have to be its own RMD at some point, and run as needed
 #I'm not sure if I got this to actually work as I wanted...
+#But good luck to whoever tries it out!
 
 # pca.clus=data.frame(clusid=so@ident,so@dr$pca@cell.embeddings[,1:pcs])
 # meanPC = pca.clus %>% group_by(clusid) %>% summarise_all(funs(mean)) 
