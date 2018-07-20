@@ -46,7 +46,7 @@ elif config['project']['pipeline'] == "scrnaseqcluster":
 elif config['project']['pipeline'] == "scrnaseqmulticluster":
   rule all:
      params: batch='--time=168:00:00'
-     input: expand(join(workpath,subdir,"combined_cca/","{pid}_scrna_multicluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],pid=pid)),name=samples)
+     input: expand(join(workpath,subdir,"combined_cca/","{pid}_scrna_multicluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],pid=pid)))
 
 
 rule cellranger: 
@@ -107,8 +107,8 @@ rule scrna_cluster:
    params: rname='pl:scrnacluster',batch='--partition=largemem --cpus-per-task=32 --mem=1000g --time=48:00:00',dir=config['project']['workpath'],pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],projDesc=config['project']['description'],projectId=config['project']['id'],sd=subdir
    input: so=join(workpath,subdir,"{pid}.{name}_initial_seurat_object.rds")
    output:
-    out1=join(workpath,subdir,"{name}/","{pid}.{name}","_scrna_cluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'])),
-    out2=join(workpath,subdir,"{name}/","{pid}.{name}","_cluster_seurat_object_{pcs}_{resolution}.rds".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION']))
+    out1=join(workpath,subdir,"{name}/","{pid}.{name}"+"_scrna_cluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'])),
+    out2=join(workpath,subdir,"{name}/","{pid}.{name}"+"_cluster_seurat_object_{pcs}_{resolution}.rds".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION']))
    shell: "cp Scripts/scrna_cluster.Rmd {params.dir}/{params.sd}/{wildcards.name}/; module load R/3.5; Rscript Scripts/scrna_cluster_call.R '{params.dir}/{params.sd}/{wildcards.name}' '{input.so}' '{params.pcs}' '{params.resolution}' '{params.projectId}.{wildcards.name}' '{params.projDesc}'"
 
 rule scrna_cca: 
@@ -123,6 +123,6 @@ rule scrna_multicluster:
    params: rname='pl:scrnamulticluster',batch='--partition=largemem --cpus-per-task=32 --mem=1000g --time=48:00:00',dir=config['project']['workpath'],pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'],projDesc=config['project']['description'],projectId=config['project']['id'],sd=subdir
    input: so=join(workpath,subdir,"combined_cca/","{pid}_combined_cca_seurat_object.rds")
    output:
-    out1=join(workpath,subdir,"combined_cca/","{pid}_scrna_multicluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'])),
-    out2=join(workpath,subdir,"combined_cca/","{pid}_combined_cluster_seurat_object_{pcs}_{resolution}.rds".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION']))
+    out1=join(workpath,subdir,"combined_cca/","{pid}"+"_scrna_multicluster_{pcs}_{resolution}.html".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION'])),
+    out2=join(workpath,subdir,"combined_cca/","{pid}"+"_combined_cluster_seurat_object_{pcs}_{resolution}.rds".format(pcs=config['project']['PCS'],resolution=config['project']['RESOLUTION']))
    shell: "cp Scripts/scrna_multicluster.Rmd {params.dir}/{params.sd}/combined_cca/; module load R/3.5; Rscript Scripts/scrna_multicluster_call.R '{params.dir}/{params.sd}/combined_cca' '{input.so}' '{params.pcs}' '{params.resolution}' '{params.projectId}' '{params.projDesc}'"
