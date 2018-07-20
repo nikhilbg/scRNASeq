@@ -48,7 +48,7 @@ so <- FindClusters(so, reduction.type = "pca", dims.use = 1:pcs, resolution = re
 so <- RunTSNE(so, dims.use = 1:pcs, do.fast = T)
 TSNEPlot(so,do.label=T,do.return = T)
 tsplot <- TSNEPlot(so,do.label=T,do.return = T)
-saveRDS(so, paste0(projectId,"_cluster_seurat_object.rds"))
+saveRDS(so, paste0(projectId,"_cluster_seurat_object_",pcs,"_",res,".rds"))
 ```
 
 ```{r Seurat_genes, echo=FALSE,warning=FALSE,message=FALSE,results='hide'}
