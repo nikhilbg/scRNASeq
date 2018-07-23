@@ -11,9 +11,9 @@ workpath = config['project']['workpath']
 
 pid=config['project']['id']
 if config['project']['DOCYCLEREGRESS'] == "TRUE" :
-  subdir="no_cell_cycle_regression/"
-elif config['project']['DOCYCLEREGRESS'] == "FALSE" :
   subdir="with_cell_cycle_regression/"
+elif config['project']['DOCYCLEREGRESS'] == "FALSE" :
+  subdir="no_cell_cycle_regression/"
 print(expand(join(workpath,subdir,"{pid}.{name}"),pid=pid,name=samples))
 
 
